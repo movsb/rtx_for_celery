@@ -21,6 +21,10 @@ Begin VB.Form frmMain
    ScaleHeight     =   3015
    ScaleWidth      =   4125
    StartUpPosition =   1  '所有者中心
+   Begin VB.Timer Timer1 
+      Left            =   1440
+      Top             =   3720
+   End
    Begin VB.CommandButton cmdLog 
       Caption         =   "Log"
       Height          =   375
@@ -83,6 +87,9 @@ Option Explicit
 Dim WithEvents Presence As RTXCAPILib.RTXCPresence
 Attribute Presence.VB_VarHelpID = -1
 
+' 发送消息接口
+Public g_imObj As RTXCMODULEINTERFACELib.IRTXIM
+
 ' 用户名到列表item的映射
 Dim user_map As New Scripting.Dictionary
 
@@ -108,7 +115,7 @@ Private Sub update_status_text(ByVal user As String, ByVal RTXPresence As RTXCAP
         item.SubItems(2) = s
         item.SubItems(3) = t
         
-        g_txtLog = g_txtLog & vbCrLf & user & vbTab & "->  " & s & vbTab & "@  " & t
+        g_txtLog = g_txtLog & user & vbTab & "->  " & s & vbTab & "@  " & t & vbCrLf
     End If
 End Sub
 
@@ -147,8 +154,12 @@ Private Sub Form_Load()
         End
     End If
     
+    ' 不太清楚，但可以使得按ESC关闭窗口
     Me.KeyPreview = True
     
+    ' 打开消息对话框接口，不知道为什么在WndProc里面拿不到
+    Set g_imObj = CreateObject("RTXClient.RTXAPI").GetObject("AppRoot").GetAppObject("RTXPlugin.IM")
+                
     ' RTX用户在线状态对象
     Set Presence = CreateObject("RTXClient.RTXAPI").GetObject("kernalRoot").Presence
     
@@ -171,7 +182,7 @@ Private Sub Form_Load()
     ' 格式一定是：小写RTX用户名,自定义显示名称
     Dim iFile As Integer
     iFile = FreeFile
-    Open "C:\Users\Tao\Desktop\rtx_for_celery\users.txt" For Input As #iFile
+    Open "users.txt" For Input As #iFile
         Do While Not EOF(iFile)
             Dim textline As String
             Dim tokens() As String
@@ -186,9 +197,25 @@ Private Sub Form_Load()
             user_map.Add tokens(0), item
         Loop
     Close #iFile
+    
+    ' 子类化以接收自定义消息
+    g_WndProc = SetWindowLong(frmMain.hWnd, GWL_WNDPROC, AddressOf SubWndProc)
+    
+    ' 刚打开时自动刷新列表状态
+    cmdRefresh_Click
 End Sub
 
 ' RTX用户在线状态改变回调
 Private Sub Presence_OnPresenceChange(ByVal Account As String, ByVal RTXPresence As RTXCAPILib.RTX_PRESENCE)
     update_status_text Account, RTXPresence
+End Sub
+
+Private Sub Form_Unload(Cancel As Integer)
+    SetWindowLong frmMain.hWnd, GWL_WNDPROC, g_WndProc
+End Sub
+
+' 在这里直接调用发消息接口
+Private Sub Timer1_Timer()
+    frmMain.Timer1.Enabled = False
+    g_imObj.SendIMEx g_msgUsers, "", ""
 End Sub
