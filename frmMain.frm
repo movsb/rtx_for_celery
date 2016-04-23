@@ -1,6 +1,6 @@
 VERSION 5.00
 Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MSCOMCTL.OCX"
-Begin VB.Form Form1 
+Begin VB.Form frmMain 
    BorderStyle     =   1  'Fixed Single
    Caption         =   "RTX for Celery"
    ClientHeight    =   3015
@@ -21,12 +21,20 @@ Begin VB.Form Form1
    ScaleHeight     =   3015
    ScaleWidth      =   4125
    StartUpPosition =   1  '所有者中心
+   Begin VB.CommandButton cmdLog 
+      Caption         =   "Log"
+      Height          =   375
+      Left            =   3120
+      TabIndex        =   3
+      Top             =   600
+      Width           =   855
+   End
    Begin VB.CommandButton cmdExit 
       Caption         =   "Exit"
       Height          =   375
       Left            =   3120
       TabIndex        =   2
-      Top             =   600
+      Top             =   1080
       Width           =   855
    End
    Begin VB.CommandButton cmdRefresh 
@@ -64,7 +72,7 @@ Begin VB.Form Form1
       NumItems        =   0
    End
 End
-Attribute VB_Name = "Form1"
+Attribute VB_Name = "frmMain"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
@@ -78,29 +86,40 @@ Attribute Presence.VB_VarHelpID = -1
 ' 用户名到列表item的映射
 Dim user_map As New Scripting.Dictionary
 
-' 用来更新listview状态文本的子过程
+' 用来更新listview状态文本的子过程，记录日志
 Private Sub update_status_text(ByVal user As String, ByVal RTXPresence As RTXCAPILib.RTX_PRESENCE)
-    Dim s As String
-    If RTXPresence = RTX_PRESENCE_ONLINE Then
-        s = "Online"
-    ElseIf RTXPresence = RTX_PRESENCE_AWAY Then
-        s = "Away"
-    ElseIf RTXPresence = RTX_PRESENCE_OFFLINE Then
-        s = "Offline"
-    Else
-        s = "(Unknown)"
-    End If
-        If user_map.Exists(user) Then
+    If user_map.Exists(user) Then
+        Dim s As String
+        Dim t As String
         Dim item As ListItem
+
+        If RTXPresence = RTX_PRESENCE_ONLINE Then
+            s = "Online"
+        ElseIf RTXPresence = RTX_PRESENCE_AWAY Then
+            s = "Away"
+        ElseIf RTXPresence = RTX_PRESENCE_OFFLINE Then
+            s = "Offline"
+        Else
+            s = "(Unknown)"
+        End If
+
         Set item = user_map.item(user)
+        t = FormatDateTime(Now, vbShortTime)
         item.SubItems(2) = s
-        item.SubItems(3) = FormatDateTime(Now, vbShortTime)
+        item.SubItems(3) = t
+        
+        g_txtLog = g_txtLog & vbCrLf & user & vbTab & "->  " & s & vbTab & "@  " & t
     End If
 End Sub
 
 ' 点击“退出”按钮时
 Private Sub cmdExit_Click()
     Unload Me
+End Sub
+
+' 显示“日志”
+Private Sub cmdLog_Click()
+    frmLog.Show 1, Me
 End Sub
 
 ' 点击“刷新”手动刷新列表
