@@ -5,7 +5,7 @@ Begin VB.Form frmLog
    ClientHeight    =   4545
    ClientLeft      =   45
    ClientTop       =   390
-   ClientWidth     =   4095
+   ClientWidth     =   4710
    BeginProperty Font 
       Name            =   "Segoe UI"
       Size            =   8.25
@@ -19,7 +19,7 @@ Begin VB.Form frmLog
    MaxButton       =   0   'False
    MinButton       =   0   'False
    ScaleHeight     =   4545
-   ScaleWidth      =   4095
+   ScaleWidth      =   4710
    StartUpPosition =   1  '所有者中心
    Begin VB.TextBox txtLog 
       BeginProperty Font 
@@ -38,7 +38,7 @@ Begin VB.Form frmLog
       ScrollBars      =   3  'Both
       TabIndex        =   0
       Top             =   120
-      Width           =   3855
+      Width           =   4455
    End
 End
 Attribute VB_Name = "frmLog"

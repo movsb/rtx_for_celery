@@ -6,7 +6,7 @@ Begin VB.Form frmMain
    ClientHeight    =   3015
    ClientLeft      =   45
    ClientTop       =   390
-   ClientWidth     =   4125
+   ClientWidth     =   4560
    BeginProperty Font 
       Name            =   "Segoe UI"
       Size            =   8.25
@@ -19,7 +19,7 @@ Begin VB.Form frmMain
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    ScaleHeight     =   3015
-   ScaleWidth      =   4125
+   ScaleWidth      =   4560
    StartUpPosition =   1  '所有者中心
    Begin VB.Timer Timer1 
       Left            =   1440
@@ -28,7 +28,7 @@ Begin VB.Form frmMain
    Begin VB.CommandButton cmdLog 
       Caption         =   "Log"
       Height          =   375
-      Left            =   3120
+      Left            =   3600
       TabIndex        =   3
       Top             =   600
       Width           =   855
@@ -36,7 +36,7 @@ Begin VB.Form frmMain
    Begin VB.CommandButton cmdExit 
       Caption         =   "Exit"
       Height          =   375
-      Left            =   3120
+      Left            =   3600
       TabIndex        =   2
       Top             =   1080
       Width           =   855
@@ -44,7 +44,7 @@ Begin VB.Form frmMain
    Begin VB.CommandButton cmdRefresh 
       Caption         =   "Refresh"
       Height          =   375
-      Left            =   3120
+      Left            =   3600
       TabIndex        =   1
       Top             =   120
       Width           =   855
@@ -54,8 +54,8 @@ Begin VB.Form frmMain
       Left            =   120
       TabIndex        =   0
       Top             =   120
-      Width           =   2895
-      _ExtentX        =   5106
+      Width           =   3375
+      _ExtentX        =   5953
       _ExtentY        =   4895
       View            =   3
       LabelWrap       =   -1  'True
@@ -111,7 +111,7 @@ Private Sub update_status_text(ByVal user As String, ByVal RTXPresence As RTXCAP
         End If
 
         Set item = user_map.item(user)
-        t = FormatDateTime(Now, vbShortTime)
+        t = Format(Now, "MM-dd hh:nn")
         item.SubItems(2) = s
         item.SubItems(3) = t
         
@@ -188,7 +188,7 @@ Private Sub Form_Load()
         .Add , , "Account", 0
         .Add , , "User", 1000
         .Add , , "Status", 960
-        .Add , , "Time", 800
+        .Add , , "Time", 1200
     End With
     
     ' 读取被监控的用户列表
