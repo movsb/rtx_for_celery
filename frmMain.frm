@@ -115,7 +115,20 @@ Private Sub update_status_text(ByVal user As String, ByVal RTXPresence As RTXCAP
         item.SubItems(2) = s
         item.SubItems(3) = t
         
-        g_txtLog = g_txtLog & item.SubItems(1) & vbTab & "->  " & s & vbTab & "@  " & t & vbCrLf
+        ' 更新日志
+        Dim strLog As String
+        strLog = item.SubItems(1) & vbTab & "->  " & s & vbTab & "@  " & t
+
+        ' 到窗口
+        g_txtLog = g_txtLog & strLog & vbCrLf
+        ' 到文件
+        Dim fileName As String
+        Dim iFile As Integer
+        iFile = FreeFile
+        fileName = App.Path & IIf(Right$(App.Path, 1) <> "\", "\", "") & "status.log"
+        Open fileName For Append As #iFile
+        Print #iFile, strLog
+        Close #iFile
     End If
 End Sub
 
