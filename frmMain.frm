@@ -180,9 +180,11 @@ Private Sub Form_Load()
     
     ' 读取被监控的用户列表
     ' 格式一定是：小写RTX用户名,自定义显示名称
+    Dim fileName As String
     Dim iFile As Integer
     iFile = FreeFile
-    Open "users.txt" For Input As #iFile
+    fileName = App.Path & IIf(Right$(App.Path, 1) <> "\", "\", "") & "users.txt"
+    Open fileName For Input As #iFile
         Do While Not EOF(iFile)
             Dim textline As String
             Dim tokens() As String
