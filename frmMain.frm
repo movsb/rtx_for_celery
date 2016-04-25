@@ -115,7 +115,7 @@ Private Sub update_status_text(ByVal user As String, ByVal RTXPresence As RTXCAP
         item.SubItems(2) = s
         item.SubItems(3) = t
         
-        g_txtLog = g_txtLog & user & vbTab & "->  " & s & vbTab & "@  " & t & vbCrLf
+        g_txtLog = g_txtLog & item.SubItems(1) & vbTab & "->  " & s & vbTab & "@  " & t & vbCrLf
     End If
 End Sub
 
