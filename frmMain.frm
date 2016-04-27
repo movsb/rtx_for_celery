@@ -21,6 +21,10 @@ Begin VB.Form frmMain
    ScaleHeight     =   3015
    ScaleWidth      =   4560
    StartUpPosition =   1  '所有者中心
+   Begin VB.Timer Timer2 
+      Left            =   3720
+      Top             =   1920
+   End
    Begin VB.Timer Timer1 
       Left            =   1440
       Top             =   3720
@@ -93,6 +97,29 @@ Public g_imObj As RTXCMODULEINTERFACELib.IRTXIM
 ' 用户名到列表item的映射
 Dim user_map As New Scripting.Dictionary
 
+' 托盘图标
+Private Type NotifyIconData
+    Size              As Long
+    Handle            As Long
+    ID                As Long
+    Flags             As Long
+    CallBackMessage   As Long
+    Icon              As Long
+    Tip               As String * 64
+End Type
+
+Private Declare Function Shell_NotifyIcon Lib "shell32" Alias "Shell_NotifyIconA" (ByVal Message As Long, Data As NotifyIconData) As Boolean
+
+Private Const AddIcon = &H0
+Private Const ModifyIcon = &H1
+Private Const DeleteIcon = &H2
+Private Const WM_USER = &H400
+Private Const MessageFlag = &H1
+Private Const IconFlag = &H2
+Private Const TipFlag = &H4
+
+Private g_icon_data As NotifyIconData
+
 ' 用来更新listview状态文本的子过程，记录日志
 Private Sub update_status_text(ByVal user As String, ByVal RTXPresence As RTXCAPILib.RTX_PRESENCE)
     If user_map.Exists(user) Then
@@ -121,6 +148,13 @@ Private Sub update_status_text(ByVal user As String, ByVal RTXPresence As RTXCAP
 
         ' 到窗口
         g_txtLog = g_txtLog & strLog & vbCrLf
+        
+        ' 到托盘图标文本
+        g_icon_data.Tip = item.SubItems(1) & " -> " & s & " @ " & t & vbNullChar
+        Shell_NotifyIcon ModifyIcon, g_icon_data
+        Timer2.Interval = 1000
+        Timer2.Enabled = True
+
         ' 到文件
         Dim fileName As String
         Dim iFile As Integer
@@ -166,6 +200,18 @@ Private Sub Form_Load()
         MsgBox "RTX for Celery 已经运行。"
         End
     End If
+    
+    ' 托盘图标
+    With g_icon_data
+        .Size = Len(g_icon_data)
+        .Handle = Me.hWnd
+        .ID = vbNull
+        .Flags = IconFlag Or TipFlag Or MessageFlag
+        .CallBackMessage = WM_USER + 128
+        .Icon = Me.Icon
+        .Tip = "RTX for Celery" & vbNullChar
+    End With
+    Call Shell_NotifyIcon(AddIcon, g_icon_data)
     
     ' 不太清楚，但可以使得按ESC关闭窗口
     Me.KeyPreview = True
@@ -227,10 +273,29 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     SetWindowLong frmMain.hWnd, GWL_WNDPROC, g_WndProc
+    Shell_NotifyIcon DeleteIcon, g_icon_data
 End Sub
 
 ' 在这里直接调用发消息接口
 Private Sub Timer1_Timer()
     frmMain.Timer1.Enabled = False
     g_imObj.SendIMEx g_msgUsers, "", ""
+End Sub
+
+Public Sub show_trayicon(ByVal bshow As Boolean)
+    If bshow Then
+        g_icon_data.Icon = Me.Icon
+    Else
+        g_icon_data.Icon = vbNull
+    End If
+
+    Shell_NotifyIcon ModifyIcon, g_icon_data
+End Sub
+
+Public Sub reset_trayicon()
+    g_icon_data.Tip = "RTX for Celery" & vbNullChar
+    Shell_NotifyIcon ModifyIcon, g_icon_data
+End Sub
+Private Sub Timer2_Timer()
+    show_trayicon g_icon_data.Icon = vbNull
 End Sub

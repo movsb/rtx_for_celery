@@ -6,7 +6,7 @@ Public g_msgUsers As String
 
 
 ' 子类化窗口以接收自定义消息
-Private Const WM_APP As Long = 32768
+Private Const WM_USER As Long = &H400
 Private Const WM_COPYDATA As Long = &H4A
 Public Const GWL_WNDPROC = (-4)
 Public g_WndProc As Long
@@ -20,6 +20,9 @@ Type COPYDATASTRUCT
     cbData As Long
     lpData As Long
 End Type
+
+Public Const WM_RBUTTONUP As Long = &H205
+Public Const WM_LBUTTONDBLCLK As Long = &H203
 
 Public Function SubWndProc(ByVal hWnd As Long, ByVal iMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
     If hWnd = frmMain.hWnd And iMsg = WM_COPYDATA Then
@@ -38,6 +41,15 @@ Public Function SubWndProc(ByVal hWnd As Long, ByVal iMsg As Long, ByVal wParam 
                 frmMain.Timer1.Interval = 100
                 frmMain.Timer1.Enabled = True
             End If
+        End If
+    ElseIf hWnd = frmMain.hWnd And iMsg = WM_USER + 128 Then
+         If lParam = WM_RBUTTONUP Then
+            frmMain.Timer2.Enabled = False
+            frmMain.show_trayicon True
+            frmMain.reset_trayicon
+            frmMain.Hide
+        ElseIf lParam = WM_LBUTTONDBLCLK Then
+            frmMain.Show
         End If
     End If
 
