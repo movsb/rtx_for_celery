@@ -121,7 +121,7 @@ Private Const TipFlag = &H4
 Private g_icon_data As NotifyIconData
 
 ' 用来更新listview状态文本的子过程，记录日志
-Private Sub update_status_text(ByVal user As String, ByVal RTXPresence As RTXCAPILib.RTX_PRESENCE)
+Private Sub update_status_text(ByVal user As String, ByVal RTXPresence As RTXCAPILib.RTX_PRESENCE, ByVal bLog As Boolean)
     If user_map.Exists(user) Then
         Dim s As String
         Dim t As String
@@ -137,32 +137,35 @@ Private Sub update_status_text(ByVal user As String, ByVal RTXPresence As RTXCAP
             s = "(Unknown)"
         End If
 
+        ' 到列表
         Set item = user_map.item(user)
         t = Format(Now, "MM-dd hh:nn")
         item.SubItems(2) = s
         item.SubItems(3) = t
         
-        ' 更新日志
-        Dim strLog As String
-        strLog = item.SubItems(1) & vbTab & "->  " & s & vbTab & "@  " & t
-
-        ' 到窗口
-        g_txtLog = g_txtLog & strLog & vbCrLf
-        
-        ' 到托盘图标文本
-        g_icon_data.Tip = item.SubItems(1) & " -> " & s & " @ " & t & vbNullChar
-        Shell_NotifyIcon ModifyIcon, g_icon_data
-        Timer2.Interval = 1000
-        Timer2.Enabled = True
-
-        ' 到文件
-        Dim fileName As String
-        Dim iFile As Integer
-        iFile = FreeFile
-        fileName = App.Path & IIf(Right$(App.Path, 1) <> "\", "\", "") & "status.log"
-        Open fileName For Append As #iFile
-        Print #iFile, strLog
-        Close #iFile
+        If bLog Then
+            ' 更新日志
+            Dim strLog As String
+            strLog = item.SubItems(1) & vbTab & "->  " & s & vbTab & "@  " & t
+    
+            ' 到窗口
+            g_txtLog = g_txtLog & strLog & vbCrLf
+            
+            ' 到托盘图标文本
+            g_icon_data.Tip = item.SubItems(1) & " -> " & s & " @ " & t & vbNullChar
+            Shell_NotifyIcon ModifyIcon, g_icon_data
+            Timer2.Interval = 1000
+            Timer2.Enabled = True
+    
+            ' 到文件
+            Dim fileName As String
+            Dim iFile As Integer
+            iFile = FreeFile
+            fileName = App.Path & IIf(Right$(App.Path, 1) <> "\", "\", "") & "status.log"
+            Open fileName For Append As #iFile
+            Print #iFile, strLog
+            Close #iFile
+        End If
     End If
 End Sub
 
@@ -183,7 +186,7 @@ Private Sub cmdRefresh_Click()
         Dim user, status As String
         user = ListView1.ListItems(i).Text
         status = Presence.RTXPresence(user)
-        update_status_text user, status
+        update_status_text user, status, False
     Next
 End Sub
 
@@ -268,7 +271,7 @@ End Sub
 
 ' RTX用户在线状态改变回调
 Private Sub Presence_OnPresenceChange(ByVal Account As String, ByVal RTXPresence As RTXCAPILib.RTX_PRESENCE)
-    update_status_text Account, RTXPresence
+    update_status_text Account, RTXPresence, True
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
