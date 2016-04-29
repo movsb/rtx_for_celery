@@ -34,7 +34,7 @@ Public Function SubWndProc(ByVal hWnd As Long, ByVal iMsg As Long, ByVal wParam 
             If cds.cbData <= 4096 Then
                 Dim str As String
                 Dim buf(1 To 4096) As Byte
-                CopyMemory buf(1), ByVal cds.lpData, cds.cbData
+                CopyMemory buf(1), ByVal cds.lpData, cds.cbData ' 缓冲区可能溢出
                 str = StrConv(buf, vbUnicode)
                 ' 直接在这里处理会报COM自动化错误，所以弄个定时器去操作
                 g_msgUsers = str
@@ -49,6 +49,10 @@ Public Function SubWndProc(ByVal hWnd As Long, ByVal iMsg As Long, ByVal wParam 
             frmMain.reset_trayicon
             frmMain.Hide
         ElseIf lParam = WM_LBUTTONDBLCLK Then
+            ' 若当前状态是最小化，则切换为还原
+            If frmMain.WindowState = 1 Then
+                frmMain.WindowState = 0
+            End If
             frmMain.Show
         End If
     End If
