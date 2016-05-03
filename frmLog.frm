@@ -55,6 +55,7 @@ Private Sub Form_KeyUp(KeyCode As Integer, Shift As Integer)
 End Sub
 
 Private Sub Form_Load()
+    Me.Icon = frmMain.Icon
     Me.KeyPreview = True
     txtLog.Text = g_txtLog
 End Sub
