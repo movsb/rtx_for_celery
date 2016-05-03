@@ -47,7 +47,9 @@ Public Function SubWndProc(ByVal hWnd As Long, ByVal iMsg As Long, ByVal wParam 
             frmMain.Timer2.Enabled = False
             frmMain.show_trayicon True
             frmMain.reset_trayicon
-            frmMain.Hide
+            If frmMain.Enabled Then
+                frmMain.Hide
+            End If
         ElseIf lParam = WM_LBUTTONDBLCLK Then
             ' 若当前状态是最小化，则切换为还原
             If frmMain.WindowState = 1 Then
