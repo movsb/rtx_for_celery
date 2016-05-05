@@ -22,9 +22,17 @@ Begin VB.Form frmMain
    ScaleHeight     =   3015
    ScaleWidth      =   4560
    StartUpPosition =   1  '所有者中心
+   Begin VB.CommandButton cmdHide 
+      Caption         =   "Hide"
+      Height          =   375
+      Left            =   3600
+      TabIndex        =   4
+      Top             =   1080
+      Width           =   855
+   End
    Begin VB.Timer Timer2 
       Left            =   3720
-      Top             =   1920
+      Top             =   2280
    End
    Begin VB.Timer Timer1 
       Left            =   1440
@@ -43,7 +51,7 @@ Begin VB.Form frmMain
       Height          =   375
       Left            =   3600
       TabIndex        =   2
-      Top             =   1080
+      Top             =   1560
       Width           =   855
    End
    Begin VB.CommandButton cmdRefresh 
@@ -173,6 +181,10 @@ End Sub
 ' 点击“退出”按钮时
 Private Sub cmdExit_Click()
     Unload Me
+End Sub
+
+Private Sub cmdHide_Click()
+    Me.Hide
 End Sub
 
 ' 显示“日志”
