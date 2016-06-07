@@ -311,6 +311,7 @@ End Sub
 Public Sub reset_trayicon()
     g_icon_data.Tip = "RTX for Celery" & vbNullChar
     Shell_NotifyIcon ModifyIcon, g_icon_data
+    frmMain.Timer2.Enabled = False
 End Sub
 Private Sub Timer2_Timer()
     show_trayicon g_icon_data.Icon = vbNull
